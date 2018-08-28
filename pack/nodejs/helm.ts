@@ -6,6 +6,7 @@ import * as pulumi from "@pulumi/pulumi";
 import * as shell from "shell-quote";
 import * as tmp from "tmp";
 import * as path from "./path";
+import * as nodepath from "path";
 
 export namespace v2 {
     export interface ChartOpts {
@@ -57,9 +58,9 @@ export namespace v2 {
                 // > looked up or retrieved in-cluster will be faked locally. Additionally, none
                 // > of the server-side testing of chart validity (e.g. whether an API is supported)
                 // > is done.
-                const chart = `${shell.quote([chartDir.name])}/${shell.quote([config.chart])}`;
+                const chart = path.quotePath(nodepath.join(chartDir.name, config.chart));
                 const release = shell.quote([releaseName]);
-                const values = shell.quote([overrides.name]);
+                const values = path.quotePath(overrides.name);
                 const namespaceArg = config.namespace ? `--namespace ${shell.quote([config.namespace])}` : "";
                 const yamlStream = execSync(
                     `helm template ${chart} --name ${release} --values ${values} ${namespaceArg}`
